@@ -1,0 +1,25 @@
+#include "main.h"
+
+/**
+ * positive_or_negative - checks is given number is +, - or 0
+ *
+ * @i: nmber to be checked
+ * Return: nothing on Success
+ */
+void positive_or_negative(int i)
+{
+
+if (i > 0)
+printf("%d is positive\n", i);
+
+else if (i < 0)
+printf("%d is negative\n", i);
+
+else
+printf("%d is zero\n", i);
+}
+
+
+
+
+
