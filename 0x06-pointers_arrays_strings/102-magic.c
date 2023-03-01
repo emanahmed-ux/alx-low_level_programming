@@ -1,8 +1,5 @@
 #include <stdio.h>
-/**
- * main - Entry point
- * Return: Always 0 (Success)
- */
+
 int main(void)
 {
 int n;
@@ -13,6 +10,7 @@ p = &n;
 /*
  * write your line of code here...
  * Remember:
+ * main - magic
  * - you are not allowed to use a
  * - you are not allowed to modify p
  * - only one statement
