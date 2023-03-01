@@ -16,4 +16,5 @@ int _putchar(char c);
 void print_array(int *a, int n);
 char *leet(char *a);
 void print_number(int n);
+int main(void)
 #endif
