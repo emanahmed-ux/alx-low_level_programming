@@ -1,4 +1,8 @@
-#include"main.h"
+#include "main.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 
 /**
  * _puts - prints a string, followed by a newline to stdout
