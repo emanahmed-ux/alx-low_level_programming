@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#inclide "main.h"
+#include "main.h"
 /**
  * _realloc - reallocate a memory block using malloc and free
  *
