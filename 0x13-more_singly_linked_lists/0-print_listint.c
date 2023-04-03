@@ -9,18 +9,14 @@
 
 size_t print_listint(const listint_t *h)
 {
-	const listint_t *ptr = h;
-	size_t num = 0;
+	size_t count = 0;
 
-	printf("The list contains: ");
-	for (; ptr != NULL; ptr = ptr->next)
+	while (h != NULL)
 	{
-		printf("%d", ptr->n);
-		num++;
-		if (ptr->next != NULL)
-			printf(", ");
+		printf("%d\n", h->n);
+		h = h->next;
+		count++;
 	}
-	printf("\n");
 
-	return (num);
+	return (count);
 }
