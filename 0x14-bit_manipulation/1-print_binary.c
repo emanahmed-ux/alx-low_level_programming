@@ -8,26 +8,26 @@
 
 void print_binary(unsigned long int n)
 {
-	unsigned long int mask = 1;
-	int count = 0;
+	unsigned long int i = 1;
+	int mo = 0;
 
-	while ((mask << 1) <= n)
-		mask <<= 1;
+	while ((i << 1) <= n)
+		i <<= 1;
 
-	while (mask > 0)
+	while (i > 0)
 	{
-		if (n & mask)
+		if (n & i)
 		{
 			_putchar('1');
-			count++;
+			mo = 1;
 		}
-		else if (count || mask == 1)
+		else if (mo)
 			_putchar('0');
 
-		mask >>= 1;
+		i >>= 1;
 	}
 
-	if (!count)
+	if (!mo)
 		_putchar('0');
 }
 
