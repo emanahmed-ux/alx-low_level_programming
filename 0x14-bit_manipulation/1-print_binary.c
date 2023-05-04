@@ -11,28 +11,25 @@
 
 void print_binary(unsigned long int n)
 {
-	unsigned long int i = 1;
-	int mo = 0;
+	int i;
+	int found_first_one = 0;
 
-	while (i <= n)
+	if (n == 0)
 	{
-		i <<= 1;
+		_putchar('0');
+		return;
 	}
 
-	while (i > 1)
+	for (i = (sizeof(unsigned long int) * 8) - 1; i >= 0; i--)
 	{
-		i >>= 1;
-
-		if (n & i)
+		if (n >> i & 1)
 		{
 			_putchar('1');
-			mo = 1;
+			found_first_one = 1;
 		}
-		else if (mo)
+		else if (found_first_one)
+		{
 			_putchar('0');
 		}
-
-	if (mo == 0)
-		_putchar('0');
+	}
 }
-
