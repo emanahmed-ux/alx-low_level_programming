@@ -3,7 +3,10 @@
 
 /**
  * print_binary - prints equivalent of a decimal
+ *
  * @n: binary number
+ *
+ * Return: a binary number
  */
 
 void print_binary(unsigned long int n)
@@ -29,7 +32,7 @@ void print_binary(unsigned long int n)
 			_putchar('0');
 		}
 
-	if (!mo)
+	if (mo == 0)
 		_putchar('0');
 }
 
