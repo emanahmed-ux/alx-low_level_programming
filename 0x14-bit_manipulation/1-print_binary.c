@@ -11,11 +11,15 @@ void print_binary(unsigned long int n)
 	unsigned long int i = 1;
 	int mo = 0;
 
-	while ((i << 1) <= n)
-		i <<= 1;
-
-	while (i > 0)
+	while (i <= n)
 	{
+		i <<= 1;
+	}
+
+	while (i > 1)
+	{
+		i >>= 1;
+
 		if (n & i)
 		{
 			_putchar('1');
@@ -23,9 +27,7 @@ void print_binary(unsigned long int n)
 		}
 		else if (mo)
 			_putchar('0');
-
-		i >>= 1;
-	}
+		}
 
 	if (!mo)
 		_putchar('0');
