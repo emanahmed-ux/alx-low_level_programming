@@ -42,9 +42,11 @@ void check_elf(unsigned char *e_ident)
 
 void print_magic(unsigned char *e_ident)
 {
+	int i;
+
 	printf("  Magic:   ");
 
-	for (int i = 0; i < EI_NIDENT; i++)
+	for (i = 0; i < EI_NIDENT; i++)
 	{
 		printf("%02x ", e_ident[i]);
 	}
@@ -75,10 +77,14 @@ void print_data(unsigned char *e_ident)
 {
 	printf("  Data:                              ");
 
-	printf("%s\n", (e_ident[EI_DATA] == ELFDATA2LSB) ? "2's complement, little endian" :
-			(e_ident[EI_DATA] == ELFDATA2MSB) ? "2's complement, big endian" :
-			(e_ident[EI_DATA] == ELFDATANONE) ? "none" :
-			"<unknown: %x>", e_ident[EI_DATA]);
+	if (e_ident[EI_DATA] == ELFDATA2LSB)
+		printf("2's complement, little endian\n");
+	else if (e_ident[EI_DATA] == ELFDATA2MSB)
+		printf("2's complement, big endian\n");
+	else if (e_ident[EI_DATA] == ELFDATANONE)
+		printf("none\n");
+	else
+		printf("<unknown: 0x%x>\n", e_ident[EI_DATA]);
 }
 /**
  * print_version - Prints the version of an ELF header.
@@ -210,10 +216,10 @@ void print_entry(unsigned long int e_entry, unsigned char *e_ident)
 	}
 }
 /**
- * Closes an ELF file.
- * @param elf The file descriptor of the ELF file.
+ * close_elf - Closes an ELF file.
+ * @elf: The file descriptor of the ELF file.
  *
- * Description: If the file cannot be closed - exit code 98.
+ * Return: If the file cannot be closed - exit code 98.
  */
 void close_elf(int elf)
 {
@@ -260,7 +266,7 @@ int main(int argc, char *argv[])
 		return (EXIT_FAILURE);
 	}
 
-	if (read(fd, header, sizeof(Elf64_Ehdr)) < sizeof(Elf64_Ehdr))
+	if (read(fd, header, sizeof(Elf64_Ehdr)) < (ssize_t)sizeof(Elf64_Ehdr))
 	{
 		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", argv[1]);
 		free(header);
