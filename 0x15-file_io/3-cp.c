@@ -47,16 +47,17 @@ int main(int my_argc, char *my_argv[])
 	bur = create_buf(my_argv[2]);
 	fm = open(my_argv[1], O_RDONLY);
 	to = open(my_argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
-
-	if (fm == -1)
-	{
-		dprintf(STDERR_FILENO,
+	do {
+		if (fm == -1 || s == -1)
+		{
+			dprintf(STDERR_FILENO,
 			"Error: Can't read from file %s\n", my_argv[1]);
 		free(bur);
 		exit(98);
 	}
 
 	s = read(fm, bur, 1024);
+	}
 
 	while (s > 0)
 	{
