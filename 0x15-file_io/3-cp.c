@@ -47,35 +47,33 @@ int main(int my_argc, char *my_argv[])
 	bur = create_buf(my_argv[2]);
 	fm = open(my_argv[1], O_RDONLY);
 	to = open(my_argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
+	s = read(fm, bur, 1024);
 
-	if (fm == -1)
+	do {
+		if (fm == -1 || s == -1)
 	{
 		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", my_argv[1]);
 		free(bur);
 		exit(98);
 	}
-	s = read(fm, bur, 1024);
+	h = write(to, bur, s);
 
-	while (s > 0)
+	if (to == -1 || h == -1)
 	{
-		h = write(to, bur, s);
-
-		if (h == -1)
-		{
-			dprintf(STDERR_FILENO,
-				"Error: Can't write to %s\n", my_argv[2]);
-			free(bur);
-			exit(99);
-		}
-
-		s = read(fm, bur, 1024);
+		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", my_argv[2]);
+		free(bur);
+		exit(99);
 	}
+	s = read(fm, bur, 1024);
+	to = open(my_argv[2], O_WRONLY | O_APPEND);
 
-	free(bur);
-	close_fi(fm);
-	close_fi(to);
+	} while (s > 0);
 
-	return (0);
+		close_fi(fm);
+		close_fi(to);
+		free(bur);
+
+		return (0);
 }
 /**
  * close_fi - Closes file.
