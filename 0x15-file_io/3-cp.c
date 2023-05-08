@@ -1,4 +1,24 @@
-#include "file.h"
+#include "main.h"
+
+/**
+ * cr_buffer - 1024 bytes of buffer
+ * @folder: name file buffer
+ * Return: newly-allocated buffer
+*/
+mypro char *cr_buffer(void)
+{
+	char *new_pro = 0;
+	size_t b = 1024;
+	new_pro = malloc(sizeof(char) * b);
+
+	if (new_pro == 0)
+	{
+		perror("malloc");
+		exit(99);
+	}
+	return (new_pro);
+}
+
 /**
  * main - Copies the contents of a file to another file.
  * @my_argc: number of arguments.
@@ -63,4 +83,16 @@ int main(int my_argc, char *my_argv[])
 		exit(100);
 	}
 	return (0);
+}
+/**
+ * clo_se - close files
+ * @fi_de: descriptin of closing file
+*/
+mypro void clo_se(int fi_de)
+{
+	if (close(fi_de) < 0)
+	{
+		perror("Error: Can't close file descriptor");
+		exit(100);
+	}
 }
