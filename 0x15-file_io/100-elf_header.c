@@ -9,15 +9,14 @@
 #define ID 16
 void ver_sion(unsigned char *e_ident);
 void clo_sing(int file_elf);
-int main(
-int dtr, char *ker[]);
+int main(int dtr, char *ker[]);
 void class(unsigned char *e_ident);
 int elf_che(unsigned char *e_ident);
 void magic(unsigned char *e_ident);
 void osabi(unsigned char *e_ident);
 void abi(unsigned char *e_ident);
-void type(unsigned int mytype, unsigned char *e_ident);
-void entry(unsigned int myenter, unsigned char *e_ident);
+void type(unsigned int e_type, unsigned char *e_ident);
+void entry(unsigned long int e_entry, unsigned char *e_ident);
 void data(unsigned char *e_ident);
 int main(int argc, char **argv);
 /**
@@ -89,8 +88,8 @@ void magic(unsigned char *e_ident)
 	for (my_pro = 0; my_pro < EI_NIDENT; my_pro++)
 	{
 		printf("%02x ", e_ident[my_pro]);
+		printf(my_pro == EI_NIDENT - 1 ? "\n" : " ");
 	}
-	printf("\n");
 }
 /**
  * osabi - shows OS/ABI
@@ -153,17 +152,17 @@ void abi(unsigned char *e_ident)
 /**
  * type - prints type of an ELF header
  * @e_ident: pointer of array
- * @mytype: ELF type
+ * @e_type: ELF type
 */
-void type(unsigned int mytype, unsigned char *e_ident)
+void type(unsigned int e_type, unsigned char *e_ident)
 {
 	const char *newtype = 0;
 
 	if (e_ident[EI_DATA] == ELFDATA2MSB)
 	{
-		mytype = (mytype << 8) | (mytype >> 8);
+		e_type = (e_type << 8) | (e_type >> 8);
 	}
-	switch (mytype)
+	switch (e_type)
 	{
 	case ET_NONE:
 		newtype = "NONE (None)";
@@ -188,23 +187,39 @@ void type(unsigned int mytype, unsigned char *e_ident)
 }
 /**
  * entry - entry point
- * @myenter: address of entry point
+ * @e_entry: address of entry point
  * @e_ident: pointer of array
 */
-void entry(unsigned int myenter, unsigned char *e_ident)
+void entry(unsigned long int e_entry, unsigned char *e_ident)
 {
 	printf("  Entry point address:               ");
 
-	if (e_ident[EI_CLASS] == ELFCLASS32)
+	if (e_ident[EI_CLASS] == ELFCLASS64)
 	{
-		printf("%#x\n", myenter);
+		if (e_ident[EI_DATA] == ELFDATA2MSB)
+		{
+			e_entry = ((e_entry & 0xFF00000000000000UL) >> 56) |
+				((e_entry & 0x00FF000000000000UL) >> 40) |
+				((e_entry & 0x0000FF0000000000UL) >> 24) |
+				((e_entry & 0x000000FF00000000UL) >> 8) |
+				((e_entry & 0x00000000FF000000UL) << 8) |
+				((e_entry & 0x0000000000FF0000UL) << 24) |
+				((e_entry & 0x000000000000FF00UL) << 40) |
+				((e_entry & 0x00000000000000FFUL) << 56);
+			e_entry = e_entry & 0xFFFFFFFFFFFFFFFFUL;
 		}
-	else if (e_ident[EI_CLASS] == ELFCLASS64)
-	{
-		printf("%#x\n", (unsigned int)myenter);
+		printf("%#lx\n", e_entry);
 	} else
 	{
-		printf("<unknown class>\n");
+		if (e_ident[EI_DATA] == ELFDATA2MSB)
+		{
+			e_entry = ((e_entry & 0xFF000000) >> 24) |
+				((e_entry & 0x00FF0000) >> 8) |
+				((e_entry & 0x0000FF00) << 8) |
+				((e_entry & 0x000000FF) << 24);
+			e_entry = e_entry & 0xFFFFFFFFUL;
+		}
+		printf("%#x\n", (unsigned int) e_entry);
 	}
 }
 /**
@@ -215,12 +230,19 @@ void data(unsigned char *e_ident)
 {
 	printf("  Data:                              ");
 
-	if (e_ident[EI_DATA] == ELFDATA2MSB)
-		printf("2's complement, big endian\n");
-	else if (e_ident[EI_DATA] == ELFDATA2LSB)
+	if (e_ident[EI_DATA] == ELFDATANONE)
+	{
+		printf("none\n");
+	} else if (e_ident[EI_DATA] == ELFDATA2LSB)
+	{
 		printf("2's complement, little endian\n");
-	else if (e_ident[EI_DATA] == ELFDATANONE)
-		printf("Invale_ident data encoding\n");
+	} else if (e_ident[EI_DATA] == ELFDATA2MSB)
+	{
+		printf("2's complement, big endian\n");
+	} else
+	{
+		printf("<unknown: %x>\n", e_ident[EI_CLASS]);
+}
 }
 /**
  * elf_che - see files in ELF
@@ -286,6 +308,7 @@ int main(int dtr, char *ker[])
 	osabi(header->e_ident);
 	abi(header->e_ident);
 	type(header->e_type, header->e_ident);
+	entry(header->e_entry, header->e_ident);
 	free(header);
 	close(fd);
 	return (0);
