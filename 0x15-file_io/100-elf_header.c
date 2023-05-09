@@ -77,26 +77,6 @@ void class(unsigned char *e_ident)
 	}
 }
 /**
- * elf_che - see files in ELF
- * @e_ident: pointer of array
- * Description: if elf file dosn't exsiest - exit code 98
- * Return: 0
-*/
-int elf_che(unsigned char *e_ident)
-{
-
-	if ((e_ident[0] ^ 0x7F) ||
-			(e_ident[1] ^ 'E') ||
-			(e_ident[2] ^ 'L') ||
-			(e_ident[3] ^ 'F'))
-	{
-		dprintf(STDERR_FILENO, "Error: Not an ELF file\n");
-		exit(98);
-	}
-	return (0);
-
-}
-/**
  * magic - shows magic number
  * @e_ident: pointer of array
 */
@@ -243,6 +223,24 @@ void data(unsigned char *e_ident)
 		printf("Invale_ident data encoding\n");
 }
 /**
+ * elf_che - see files in ELF
+ * @e_ident: pointer of array
+ * Description: if elf file dosn't exsiest - exit code 98
+ * Return: 0
+*/
+int elf_che(unsigned char *e_ident)
+{
+	if ((e_ident[0] ^ 0x7F) ||
+			(e_ident[1] ^ 'E') ||
+			(e_ident[2] ^ 'L') ||
+			(e_ident[3] ^ 'F'))
+	{
+		dprintf(STDERR_FILENO, "Error: Not an ELF file\n");
+		exit(98);
+	}
+	return (0);
+}
+/**
  * main - shows information in file ELF
  * @dtr: arguments supplied
  * @ker: pointers of array
@@ -259,21 +257,18 @@ int main(int dtr, char *ker[])
 		exit(1);
 	}
 	fd = open(ker[1], O_RDONLY);
-
 	if (fd < 0)
 	{
 		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", ker[1]);
 		exit(98);
 	}
 	front = malloc(sizeof(Elf64_Ehdr));
-
 	if (front == 0)
 	{
 		dprintf(STDERR_FILENO, "Error: malloc failed\n");
 		exit(98);
 	}
 	read_ret = read(fd, front, sizeof(Elf64_Ehdr));
-
 	if (read_ret < 0)
 	{
 		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", ker[1]);
