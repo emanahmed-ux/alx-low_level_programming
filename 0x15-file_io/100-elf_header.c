@@ -17,7 +17,7 @@ void magic(unsigned char *e_ident);
 void osabi(unsigned char *e_ident);
 void abi(unsigned char *e_ident);
 void type(unsigned int mytype, unsigned char *e_ident);
-void entry(unsigned long int myenter, unsigned char *e_ident);
+void entry(unsigned int myenter, unsigned char *e_ident);
 void data(unsigned char *e_ident);
 int main(int argc, char **argv);
 /**
@@ -145,7 +145,7 @@ void abi(unsigned char *e_ident)
 {
 	printf("  ABI Version:                       ");
 
-	if (e_ident[EI_OSABI] == ELFOSABI_NONE)
+	if (e_ident[EI_OSABI] == ELFOSABI_NETBSD)
 		printf("%d\n", e_ident[EI_ABIVERSION]);
 	else
 		printf("<unknown: %x>\n", e_ident[EI_ABIVERSION]);
@@ -191,17 +191,17 @@ void type(unsigned int mytype, unsigned char *e_ident)
  * @myenter: address of entry point
  * @e_ident: pointer of array
 */
-void entry(unsigned long int myenter, unsigned char *e_ident)
+void entry(unsigned int myenter, unsigned char *e_ident)
 {
 	printf("  Entry point address:               ");
 
 	if (e_ident[EI_CLASS] == ELFCLASS32)
 	{
-		printf("%#lx\n", myenter);
+		printf("%#x\n", myenter);
 		}
 	else if (e_ident[EI_CLASS] == ELFCLASS64)
 	{
-		printf("%#lx\n", (unsigned long)myenter);
+		printf("%#x\n", (unsigned int)myenter);
 	} else
 	{
 		printf("<unknown class>\n");
@@ -225,15 +225,17 @@ void data(unsigned char *e_ident)
 /**
  * elf_che - see files in ELF
  * @e_ident: pointer of array
- * Description: if elf file dosn't exsiest - exit code 98
- * Return: 0
-*/
+ * Return: 0 on success, 98 on failure
+ */
 int elf_che(unsigned char *e_ident)
 {
-	if ((e_ident[0] ^ 0x7F) ||
-			(e_ident[1] ^ 'E') ||
-			(e_ident[2] ^ 'L') ||
-			(e_ident[3] ^ 'F'))
+	if (e_ident[EI_MAG0] != ELFMAG0 ||
+			e_ident[EI_MAG1] != ELFMAG1 ||
+			e_ident[EI_MAG2] != ELFMAG2 ||
+			e_ident[EI_MAG3] != ELFMAG3 ||
+			e_ident[EI_CLASS] != ELFCLASS64 ||
+			e_ident[EI_DATA] != ELFDATA2LSB ||
+			e_ident[EI_VERSION] != EV_CURRENT)
 	{
 		dprintf(STDERR_FILENO, "Error: Not an ELF file\n");
 		exit(98);
@@ -248,7 +250,7 @@ int elf_che(unsigned char *e_ident)
 */
 int main(int dtr, char *ker[])
 {
-	Elf64_Ehdr *front;
+	Elf64_Ehdr *header;
 	int fd, read_ret;
 
 	if (dtr != 2)
@@ -262,29 +264,29 @@ int main(int dtr, char *ker[])
 		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", ker[1]);
 		exit(98);
 	}
-	front = malloc(sizeof(Elf64_Ehdr));
-	if (front == 0)
+	header = malloc(sizeof(Elf64_Ehdr));
+	if (header == 0)
 	{
 		dprintf(STDERR_FILENO, "Error: malloc failed\n");
 		exit(98);
 	}
-	read_ret = read(fd, front, sizeof(Elf64_Ehdr));
+	read_ret = read(fd, header, sizeof(Elf64_Ehdr));
 	if (read_ret < 0)
 	{
 		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", ker[1]);
-		free(front);
+		free(header);
 		exit(98);
 	}
 	printf("ELF Header:\n");
-	elf_che(front->e_ident);
-	magic(front->e_ident);
-	class(front->e_ident);
-	data(front->e_ident);
-	ver_sion(front->e_ident);
-	osabi(front->e_ident);
-	abi(front->e_ident);
-	type(front->e_type, front->e_ident);
-	free(front);
+	elf_che(header->e_ident);
+	magic(header->e_ident);
+	class(header->e_ident);
+	data(header->e_ident);
+	ver_sion(header->e_ident);
+	osabi(header->e_ident);
+	abi(header->e_ident);
+	type(header->e_type, header->e_ident);
+	free(header);
 	close(fd);
 	return (0);
 }
