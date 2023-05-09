@@ -21,14 +21,12 @@ void entry(unsigned long int myenter, unsigned char *e_ident);
 void data(unsigned char *e_ident);
 int main(int argc, char **argv);
 /**
- * ver_sion
- * - shows the version of the elf
+ * ver_sion - shows the version of the elf
  * @e_ident: pointers of arrays
 */
 void ver_sion(unsigned char *e_ident)
 {
-	printf("  Versi
-on:                           %d",
+	printf("  Version:                           %d",
 			e_ident[EI_VERSION]);
 
 	if (e_ident[EI_VERSION] == EV_CURRENT)
@@ -52,49 +50,7 @@ void clo_sing(int file_elf)
 	}
 }
 /**
- * main - shows information in file ELF
- * @dtr: arguments supplied
- * @ker: pointers of array
- *
- * Return: 0 on success
-*/
-int main(int dtr, char *ker[])
-{
-	Elf64_Ehdr *front;
-	int fd, read_ret;
-
-	if (dtr != 2)
-	{
-		dprintf(STDERR_FILENO, "Usage: %s <ELF file>\n", ker[0]);
-		exit(1);
-	}
-	fd = open(ker[1], O_RDONLY);
-
-	if (fd < 0)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", ker[1]);
-		exit(98);
-	}
-	front = malloc(sizeof(Elf64_Ehdr));
-
-	if (front == 0)
-	{
-		dprintf(STDERR_FILENO, "Error: malloc failed\n");
-		exit(98);
-	}
-	read_ret = read(fd, front, sizeof(Elf64_Ehdr));
-
-	if (read_ret < 0)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", ker[1]);
-		free(front);
-		exit(98);
-	}
-	return(0);
-}
-/**
- * class - 
- *prints class
+ * class - prints class
  * @e_ident: pointer of array
 */
 void class(unsigned char *e_ident)
@@ -116,37 +72,32 @@ void class(unsigned char *e_ident)
 		break;
 
 		default:
-	
+
 		printf("<unknown: %x>\n", e_ident[EI_CLASS]);
 	}
 }
 /**
- * elf_che 
- *- see files in ELF
+ * elf_che - see files in ELF
  * @e_ident: pointer of array
- *
  * Description: if elf file dosn't exsiest - exit code 98
+ * Return: 0
 */
 int elf_che(unsigned char *e_ident)
 {
 
-	if ((e_ident[0] 
-^ 0x7F) ||
-			(e_ident
-		[1] ^ 'E') ||
-			(e_ident
-		[2] ^ 'L') ||
+	if ((e_ident[0] ^ 0x7F) ||
+			(e_ident[1] ^ 'E') ||
+			(e_ident[2] ^ 'L') ||
 			(e_ident[3] ^ 'F'))
 	{
 		dprintf(STDERR_FILENO, "Error: Not an ELF file\n");
 		exit(98);
 	}
-	return(0);
+	return (0);
 
 }
 /**
- * magic - 
- *shows magic number
+ * magic - shows magic number
  * @e_ident: pointer of array
 */
 void magic(unsigned char *e_ident)
@@ -155,16 +106,14 @@ void magic(unsigned char *e_ident)
 
 	printf("  Magic:   ");
 
-	for (my_pro = 0; my_pro < EI_Ne_identENT; my_pro++)
+	for (my_pro = 0; my_pro < EI_NIDENT; my_pro++)
 	{
-	
 		printf("%02x ", e_ident[my_pro]);
 	}
 	printf("\n");
 }
 /**
- * osabi - 
- *shows OS/ABI
+ * osabi - shows OS/ABI
  * @e_ident: pointer of array
  */
 void osabi(unsigned char *e_ident)
@@ -204,31 +153,25 @@ void osabi(unsigned char *e_ident)
 			printf("Standalone App\n");
 			break;
 		default:
-	
 			printf("<unknown: 0x%x>\n", e_ident[EI_OSABI]);
 			break;
 	}
-
 }
 /**
- * abi - sh
- *ows ABI number
+ * abi - shows ABI number
  * @e_ident: pointer of array
 */
 void abi(unsigned char *e_ident)
 {
 	printf("  ABI Version:                       ");
 
-	if (e_ident[EI_OSABI] == E
-LFOSABI_NONE)
+	if (e_ident[EI_OSABI] == ELFOSABI_NONE)
 		printf("%d\n", e_ident[EI_ABIVERSION]);
 	else
-
 		printf("<unknown: %x>\n", e_ident[EI_ABIVERSION]);
 }
 /**
- * type - p
- *rints type of an ELF header
+ * type - prints type of an ELF header
  * @e_ident: pointer of array
  * @mytype: ELF type
 */
@@ -240,7 +183,6 @@ void type(unsigned int mytype, unsigned char *e_ident)
 	{
 		mytype = (mytype << 8) | (mytype >> 8);
 	}
-
 	switch (mytype)
 	{
 	case ET_NONE:
@@ -266,8 +208,7 @@ void type(unsigned int mytype, unsigned char *e_ident)
 }
 /**
  * entry - entry point
- * @myenter
- *: address of entry point
+ * @myenter: address of entry point
  * @e_ident: pointer of array
 */
 void entry(unsigned long int myenter, unsigned char *e_ident)
@@ -278,18 +219,16 @@ void entry(unsigned long int myenter, unsigned char *e_ident)
 	{
 		printf("%#lx\n", myenter);
 		}
-	
 	else if (e_ident[EI_CLASS] == ELFCLASS64)
 	{
-		printf("%#lx\n",(unsigned long)myenter);
+		printf("%#lx\n", (unsigned long)myenter);
 	} else
 	{
 		printf("<unknown class>\n");
 	}
 }
 /**
- * data - P
- *rints the data.
+ * data - Prints the data.
  * @e_ident: pointer to an array.
  */
 void data(unsigned char *e_ident)
@@ -297,27 +236,60 @@ void data(unsigned char *e_ident)
 	printf("  Data:                              ");
 
 	if (e_ident[EI_DATA] == ELFDATA2MSB)
-                printf("
-			2's complement, big endian\n");
-        else if (e_ident[EI_DATA] == ELFDATA2LSB)
-                printf("
-			2's complement, little endian\n");
-        else if (e_ident[EI_DATA] ==
-	 ELFDATANONE)
-                printf("Invale_ident data encoding\n");
+		printf("2's complement, big endian\n");
+	else if (e_ident[EI_DATA] == ELFDATA2LSB)
+		printf("2's complement, little endian\n");
+	else if (e_ident[EI_DATA] == ELFDATANONE)
+		printf("Invale_ident data encoding\n");
 }
-	{
-printf("ELF Header:\n");
-elf_che(header->e_ident);
-magic(header->e_ident);
-class(header->e_ident);
-data(header->e_ident);
-ver_sion(header->e_ident);
-osabi(header->e_ident);
-abi(header->e_ident);
-type(header->mytype, header->e_ident);
+/**
+ * main - shows information in file ELF
+ * @dtr: arguments supplied
+ * @ker: pointers of array
+ * Return: 0 on success
+*/
+int main(int dtr, char *ker[])
+{
+	Elf64_Ehdr *front;
+	int fd, read_ret;
 
-free(header);
-close(e_ident);
-return(0);
+	if (dtr != 2)
+	{
+		dprintf(STDERR_FILENO, "Usage: %s <ELF file>\n", ker[0]);
+		exit(1);
+	}
+	fd = open(ker[1], O_RDONLY);
+
+	if (fd < 0)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", ker[1]);
+		exit(98);
+	}
+	front = malloc(sizeof(Elf64_Ehdr));
+
+	if (front == 0)
+	{
+		dprintf(STDERR_FILENO, "Error: malloc failed\n");
+		exit(98);
+	}
+	read_ret = read(fd, front, sizeof(Elf64_Ehdr));
+
+	if (read_ret < 0)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", ker[1]);
+		free(front);
+		exit(98);
+	}
+	printf("ELF Header:\n");
+	elf_che(front->e_ident);
+	magic(front->e_ident);
+	class(front->e_ident);
+	data(front->e_ident);
+	ver_sion(front->e_ident);
+	osabi(front->e_ident);
+	abi(front->e_ident);
+	type(front->e_type, front->e_ident);
+	free(front);
+	close(fd);
+	return (0);
 }
